@@ -6,7 +6,7 @@ import SearchBar from "./components/SearchBar";
 import Loading from "./components/Loading";
 import Toast from "./components/Toast";
 import { useState, useEffect } from "react";
-import { API_URL } from "./config"; // ← IMPORTAR
+import { API_URL } from "./config";
 
 export default function App() {
   const { user, logout, loading, showToast } = useAuth();
@@ -18,7 +18,7 @@ export default function App() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await fetch(`${API_URL}/tasks`); // ← CAMBIO
+        const res = await fetch(`${API_URL}/tasks`);
         const data = await res.json();
         setTasks(data);
       } catch (err) {
@@ -26,7 +26,7 @@ export default function App() {
       }
     };
     fetchTasks();
-  }, []);
+  }, [showToast]); // ← Agregada dependencia
 
   // ✅ Agregar tarea
   const addTask = async (text) => {
@@ -35,10 +35,16 @@ export default function App() {
       return;
     }
 
-    const newTask = { id: Date.now(), text, author: user, done: false };
+    // ← FIX: Usar user.username en lugar de todo el objeto user
+    const newTask = { 
+      id: Date.now(), 
+      text, 
+      author: user.username, // ← CAMBIO: Solo el username
+      done: false 
+    };
 
     try {
-      await fetch(`${API_URL}/tasks`, { // ← CAMBIO
+      await fetch(`${API_URL}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTask),
@@ -60,7 +66,7 @@ export default function App() {
     const updated = updatedTasks.find((t) => t.id === id);
 
     try {
-      await fetch(`${API_URL}/tasks/${id}`, { // ← CAMBIO
+      await fetch(`${API_URL}/tasks/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),

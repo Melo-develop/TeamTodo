@@ -1,11 +1,10 @@
 import { useAuth } from "../context/AuthContext";
 
 export default function Toast() {
-  const { toast, showToast } = useAuth();
+  const { toast, isToastVisible } = useAuth(); // ← CAMBIO
 
-  if (!showToast) return null;
+  if (!isToastVisible) return null; // ← CAMBIO
 
-  // 🎨 Estilos dinámicos según el mensaje
   const getToastStyle = () => {
     if (toast.includes("✅") || toast.includes("Bienvenido")) {
       return "bg-green-100 text-green-700 border-green-300";
