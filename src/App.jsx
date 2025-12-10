@@ -6,6 +6,7 @@ import SearchBar from "./components/SearchBar";
 import Loading from "./components/Loading";
 import Toast from "./components/Toast";
 import { useState, useEffect } from "react";
+import { API_URL } from "./config"; // ← IMPORTAR
 
 export default function App() {
   const { user, logout, loading, showToast } = useAuth();
@@ -17,7 +18,7 @@ export default function App() {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await fetch("http://localhost:3001/tasks");
+        const res = await fetch(`${API_URL}/tasks`); // ← CAMBIO
         const data = await res.json();
         setTasks(data);
       } catch (err) {
@@ -37,7 +38,7 @@ export default function App() {
     const newTask = { id: Date.now(), text, author: user, done: false };
 
     try {
-      await fetch("http://localhost:3001/tasks", {
+      await fetch(`${API_URL}/tasks`, { // ← CAMBIO
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTask),
@@ -59,7 +60,7 @@ export default function App() {
     const updated = updatedTasks.find((t) => t.id === id);
 
     try {
-      await fetch(`http://localhost:3001/tasks/${id}`, {
+      await fetch(`${API_URL}/tasks/${id}`, { // ← CAMBIO
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
