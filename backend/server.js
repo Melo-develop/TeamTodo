@@ -1,12 +1,15 @@
 const jsonServer = require('json-server');
 const server = jsonServer.create();
-const router = jsonServer.router('db.json');
-const middlewares = jsonServer.defaults();
+const router = jsonServer.router('database.json');
+const middlewares = jsonServer.defaults({
+  static: './public', // Esto evita el error
+  noCors: false
+});
 
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
-// Habilitar CORS
+// Habilitar CORS para que Netlify pueda acceder
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
@@ -18,5 +21,7 @@ server.use(router);
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(`JSON Server is running on port ${PORT}`);
+  console.log(`JSON Server corriendo en puerto ${PORT}`);
+  console.log(`Endpoints disponibles:`);
+  console.log(`http://localhost:${PORT}`);
 });
