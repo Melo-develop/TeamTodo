@@ -46,6 +46,16 @@
       "id": 3,
       "username": "ana",
       "password": "password789"
+    },
+    {
+      "id": 4,
+      "username": "admin1",
+      "password": "admin1"
+    },
+    {
+      "id": 5,
+      "username": "admin2",
+      "password": "admin2"
     }
   ]
 }
