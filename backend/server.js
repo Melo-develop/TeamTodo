@@ -6,13 +6,12 @@ const middlewares = jsonServer.defaults();
 server.use(middlewares);
 server.use(jsonServer.bodyParser);
 
-// ⚠️ CORS - Esto es CRÍTICO
+// ⚠️ CORS - DEBE ESTAR AQUÍ
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   
-  // Manejar preflight requests
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -20,7 +19,7 @@ server.use((req, res, next) => {
   next();
 });
 
-server.use(router);
+server.use(router); // ← DESPUÉS DEL CORS
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
