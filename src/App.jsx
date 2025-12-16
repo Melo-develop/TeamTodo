@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { API_URL } from "./config";
 
 export default function App() {
-  const { user, logout, loading, showToast } = useAuth();
+  const { user, logout, loading, showToast, isInitializing } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [search, setSearch] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
@@ -92,7 +92,8 @@ export default function App() {
   );
 
   // ⚡ Render condicional
-  if (loading) return <Loading />;
+  // Muestra Loading si se está inicializando la sesión o si se está haciendo login
+  if (isInitializing || loading) return <Loading />;
   if (!user) return <Login />;
 
   return (
