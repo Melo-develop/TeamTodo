@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { API_URL } from "../config";
 
 const AuthContext = createContext();
@@ -7,12 +7,35 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  // Estado para la carga de la sesión inicial
+  const [isInitializing, setIsInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
 
+  // 🚀 Efecto para cargar el usuario desde localStorage al iniciar la app
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Error al leer el usuario de localStorage", error);
+      // Si hay un error, nos aseguramos de que no haya usuario
+      setUser(null);
+    }
+    setIsInitializing(false); // Terminamos la inicialización
+  }, []);
+
   // ✅ Login real con una API
   const login = async (username, password) => {
+    // Validar que los campos no estén vacíos
+    if (!username || !password) {
+      showToast("❌ El usuario y la contraseña son obligatorios.");
+      return;
+    }
+
     setLoading(true);
     try {
       // 1. Hacemos una petición GET a json-server para buscar al usuario
@@ -28,6 +51,8 @@ export function AuthProvider({ children }) {
         // Asumimos que la API devuelve el objeto del usuario en `data`
         const user = data[0];
         setUser(user);
+        // 💾 Guardamos el usuario en localStorage
+        localStorage.setItem("user", JSON.stringify(user));
         showToast(`🎉 Bienvenido, ${user.username}`);
       } else {
         // Si no se encuentra el usuario, lanzamos un error
@@ -45,6 +70,8 @@ export function AuthProvider({ children }) {
   // ✅ Logout
   const logout = () => {
     setUser(null);
+    // 🗑️ Eliminamos el usuario de localStorage
+    localStorage.removeItem("user");
     showToast("👋 Sesión cerrada");
   };
 
@@ -64,7 +91,8 @@ export function AuthProvider({ children }) {
       value={{ 
         user, 
         login, 
-        logout, 
+        logout,
+        isInitializing, // ← Pasamos el estado de inicialización
         loading, 
         toast, 
         isToastVisible, // ← Booleano para Toast.jsx
